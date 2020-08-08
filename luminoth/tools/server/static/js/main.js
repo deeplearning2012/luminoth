@@ -166,13 +166,60 @@
     }
   }
 
+  const formextract = function(form) {
+    const loading = document.getElementById('loading')
+    const responseDiv = document.getElementById('response')
+    const canvas = document.getElementById('result-canvas')
+    const th = document.getElementById('prob-threshold')
+
+    var formdata = new FormData(form)
+    formdata.append("th", 100)
+    const url = '/api/fasterrcnn/extract/'
+
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', url, true)
+    xhr.send(formdata)
+
+    responseDiv.style.display = 'none'
+    loading.style.display = 'flex'
+    canvas.style.display = 'none'
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        //const response = JSON.parse(xhr.response)
+        storeElementsToDraw(objects)
+        drawImage(formdata.getAll('image')[0])
+        canvas.style.display = ''
+        document.getElementById('result-separator').style.display = 'initial'
+        document.getElementById('api-response').innerHTML = xhr.response
+        responseDiv.style.display = 'inline'
+      }
+
+      loading.style.display = 'none'
+    }
+  }
+
   window.addEventListener('resize', adjustAspectRatio)
 
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('image-form')
-    form.addEventListener('submit', event => {
+    /*form.addEventListener('submit', event => {
       event.preventDefault()
       formSubmit(form)
+    })*/
+
+      document
+    .getElementById('button-luminoth')
+    .addEventListener('click', event => {
+      event.preventDefault()
+      formSubmit(form)
+    })
+
+    document
+    .getElementById('button-luminoth2')
+    .addEventListener('click', event => {
+      event.preventDefault()
+      formextract(form)
     })
 
     document
