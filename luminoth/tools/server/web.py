@@ -55,7 +55,7 @@ def predict(model_name):
         return jsonify(error='Use POST method to send image.'), 400
 
     try:
-        image_array = get_image()
+        image_array = get_image2()
     except ValueError:
         return jsonify(error='Missing image'), 400
     except OSError:
