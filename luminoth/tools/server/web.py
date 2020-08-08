@@ -104,7 +104,7 @@ def extract(model_name):
             # Define config parameters.
             # '-l eng'  for using the English language
             # '--oem 1' for using LSTM OCR Engine
-            config = ('-l eng --oem 1 --psm 6')
+            config = ('-l chi_sim --oem 1 --psm 6')
             s +=  image_to_string(Image.open(file).convert('LA'),config=config)
             #print (s)
     return s
