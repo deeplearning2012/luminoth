@@ -117,7 +117,7 @@
     for (i = 0; i < objects.length; i++) {
       const obj = objects[i]
         console.log(obj);
-      if(!obj instanceof Object) {
+      if(!(obj instanceof Object)) {
           continue;
       }
       drawing.elements.push({
