@@ -116,6 +116,7 @@
     drawing.elements = []
     for (i = 0; i < objects.length; i++) {
       const obj = objects[i]
+        console.log(obj);
       drawing.elements.push({
         prob: obj.prob,
         label: obj.label,
