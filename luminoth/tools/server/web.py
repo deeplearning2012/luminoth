@@ -14,7 +14,7 @@ from pytesseract import image_to_string
 
 
 app = Flask(__name__)
-
+import numpy as np
 
 def get_image():
     image = request.files.get('image')
