@@ -10,8 +10,8 @@ from luminoth.tools.checkpoint import get_checkpoint_config
 from luminoth.utils.config import get_config, override_config_params
 from luminoth.utils.predicting import PredictorNetwork
 from luminoth.vis import vis_objects
+import cv2
 from pytesseract import image_to_string
-
 
 app = Flask(__name__)
 import numpy as np
@@ -24,6 +24,25 @@ def get_image():
     image = Image.open(image.stream).convert('RGB')
     return image
 
+
+def get_image2():
+    image = request.files.get('image')
+    if not image:
+        raise ValueError
+    basewidth = 300
+    # wpercent = (basewidth/float(Image.open(image.stream).size[0]))
+    # hsize = int((float(Image.open(image.stream).size[1])*float(wpercent)))
+    img = Image.open(image.stream).convert('RGB')
+    img = np.asarray(img)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    b = cv2.distanceTransform(img, distanceType=cv2.DIST_L2, maskSize=5)
+    g = cv2.distanceTransform(img, distanceType=cv2.DIST_L1, maskSize=5)
+    r = cv2.distanceTransform(img, distanceType=cv2.DIST_C, maskSize=5)
+
+    # merge the transformed channels back to an image
+    transformed_image = cv2.merge((b, g, r))
+
+    return transformed_image
 
 @app.route('/')
 def index():
