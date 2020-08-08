@@ -4,7 +4,7 @@
     backgroundImage: undefined,
     elements: []
   }
-
+  var objects = "Volvo";
   function adjustAspectRatio() {
     // Adjust so we don't lose aspect ratio on resize
     const canvas = document.getElementById('result-canvas')
