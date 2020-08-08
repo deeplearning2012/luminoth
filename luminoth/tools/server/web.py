@@ -9,6 +9,8 @@ from six.moves import _thread
 from luminoth.tools.checkpoint import get_checkpoint_config
 from luminoth.utils.config import get_config, override_config_params
 from luminoth.utils.predicting import PredictorNetwork
+from luminoth.vis import vis_objects
+from pytesseract import image_to_string
 
 
 app = Flask(__name__)
@@ -51,10 +53,61 @@ def predict(model_name):
     NETWORK_START_THREAD.join()
 
     objects = PREDICTOR_NETWORK.predict_image(image_array)
+    image = request.files.get('image')
+    if not image:
+        raise ValueError
+
+    img = Image.open(image.stream).convert('RGB')
+    # vis_objects(np.array(image_array), objects).save("c:\\temp\\data.png")
+    vis_objects(np.array(img), objects).save("/tmp/luminoth/data.png")
+    global ouputObjects
+    ouputObjects = objects
     objects = objects[:total_predictions]
 
     return jsonify({'objects': objects})
 
+@app.route('/api/<model_name>/extract/', methods=['GET', 'POST'])
+def extract(model_name):
+    print ("extract")
+    if request.method == 'GET':
+        return jsonify(error='Use POST method to send image.'), 400
+
+    #total_predictions = request.args.get('total')
+
+    # Wait for the model to finish loading.
+
+    image = request.files.get('image')
+    thres = request.values.get("th")
+
+    img = Image.open(image.stream).convert('RGB')
+    #vis_objects(np.array(image_array), objects).save("c:\\temp\\data.png")
+    s = ""
+    for obj in ouputObjects:
+        if (obj['prob'] > (int(thres)/100)):
+            coordinates = obj['bbox']
+            print (coordinates)
+            width, height = img.size
+            print (height, width)
+            width_percentage = (coordinates[2]-coordinates[0])/width*100
+            if width_percentage >= 70:
+                coordinates[0] = 0
+                coordinates[2] = width
+            coordinates[1] = coordinates[1] - 15
+            coordinates[3] = coordinates[3] + 10
+            print (width_percentage)
+            print (coordinates)
+            cropped = img.crop( ( coordinates[0], coordinates[1], coordinates[2], coordinates[3] ) )
+            file = "/tmp/luminoth/" +str(obj['prob']) +".jpg"
+            cropped.save(file)
+            #print (file)
+            print (image_to_string(Image.open(file)))
+            # Define config parameters.
+            # '-l eng'  for using the English language
+            # '--oem 1' for using LSTM OCR Engine
+            config = ('-l eng --oem 1 --psm 6')
+            s +=  image_to_string(Image.open(file).convert('LA'),config=config)
+            #print (s)
+    return s
 
 def start_network(config):
     global PREDICTOR_NETWORK
