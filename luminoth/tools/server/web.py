@@ -58,7 +58,7 @@ def predict(model_name):
         raise ValueError
 
     img = Image.open(image.stream).convert('RGB')
-    # vis_objects(np.array(image_array), objects).save("c:\\temp\\data.png")
+    # vis_objects(np.array(image_array), objects).save("/tmp/luminoth/data.png")
     vis_objects(np.array(img), objects).save("/tmp/luminoth/data.png")
     global ouputObjects
     ouputObjects = objects
@@ -80,7 +80,7 @@ def extract(model_name):
     thres = request.values.get("th")
 
     img = Image.open(image.stream).convert('RGB')
-    #vis_objects(np.array(image_array), objects).save("c:\\temp\\data.png")
+    #vis_objects(np.array(image_array), objects).save("/tmp/luminoth/data.png")
     s = ""
     print(ouputObjects)
     for obj in ouputObjects:
